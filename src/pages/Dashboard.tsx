@@ -37,7 +37,7 @@ const features = [
     stats: "Complete Records"
   },
   {
-    title: "GalrGuard",
+    title: "GlareGuard",
     description: "Blue light exposure tracking",
     icon: Shield,
     href: "/galrguard",

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "/src/components/ui/card.tsx";
 import { Button } from "/src/components/ui/button.tsx";
 import { Badge } from "/src/components/ui/badge.tsx";
+import { ImageUploadDialog } from "/src/components/ImageUploadDialog.tsx";
+import { SnellenTestDialog } from "/src/components/SnellenTestDialog.tsx";
 import { 
   Eye, 
   Brain, 
@@ -84,14 +86,25 @@ const screeningTests = [
 export default function Optiscreen() {
   const [selectedTest, setSelectedTest] = useState<string | null>(null);
   const [showSymptoms, setShowSymptoms] = useState<string | null>(null);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [showSnellenDialog, setShowSnellenDialog] = useState(false);
+  const [currentTestType, setCurrentTestType] = useState<string>("");
 
   const handleTestClick = (testId: string) => {
     setShowSymptoms(testId);
   };
 
   const handleStartTest = (testId: string) => {
-    // Here you would navigate to the specific test component
-    console.log(`Starting test: ${testId}`);
+    // For diabetic retinopathy and macular degeneration, show image upload dialog
+    if (testId === "diabetic-retinopathy" || testId === "macular-degeneration") {
+      setCurrentTestType(testId);
+      setShowUploadDialog(true);
+    } else if (testId === "snellen-test") {
+      setShowSnellenDialog(true);
+    } else {
+      // For other tests, handle differently (not implemented yet)
+      console.log(`Starting test: ${testId}`);
+    }
   };
 
   const selectedTestData = screeningTests.find(test => test.id === showSymptoms);
@@ -245,6 +258,20 @@ export default function Optiscreen() {
           </Card>
         </div>
       )}
+
+      {/* Image Upload Dialog */}
+      <ImageUploadDialog
+        isOpen={showUploadDialog}
+        onClose={() => setShowUploadDialog(false)}
+        testType={currentTestType}
+        testTitle={screeningTests.find(test => test.id === currentTestType)?.title || ""}
+      />
+
+      {/* Snellen Test Dialog */}
+      <SnellenTestDialog
+        isOpen={showSnellenDialog}
+        onClose={() => setShowSnellenDialog(false)}
+      />
 
       {/* Information Banner */}
       <Card className="bg-warning/5 border-warning/20">

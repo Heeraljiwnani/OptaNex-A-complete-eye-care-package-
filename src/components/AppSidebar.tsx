@@ -32,7 +32,7 @@ const menuItems = [
   { title: "Optitrack", url: "/optitrack", icon: BarChart3 },
   { title: "PrescriptTracker", url: "/prescripttracker", icon: FileImage },
   { title: "EyeChronicle", url: "/eyechronicle", icon: History },
-  { title: "GalrGuard", url: "/galrguard", icon: Shield },
+  { title: "GlareGuard", url: "/galrguard", icon: Shield },
 ];
 
 export function AppSidebar() {

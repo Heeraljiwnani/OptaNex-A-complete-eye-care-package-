@@ -1,12 +1,28 @@
+import { Navigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "/src/components/ui/sidebar.tsx";
 import { AppSidebar } from "/src/components/AppSidebar.tsx";
-import { Menu } from "lucide-react";
+import { Button } from "/src/components/ui/button.tsx";
+import { useAuth } from "/src/hooks/useAuth.tsx";
+import { Menu, LogOut, User } from "lucide-react";
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
+  const { user, loading, signOut } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
@@ -34,9 +50,20 @@ export function Layout({ children }: LayoutProps) {
               
               <div className="flex items-center gap-2">
                 <div className="text-right hidden sm:block">
-                  <p className="text-sm font-medium text-foreground">Welcome Back</p>
-                  <p className="text-xs text-muted-foreground">Stay healthy, see clearly</p>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <User className="h-4 w-4" />
+                    {user.email}
+                  </div>
                 </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={signOut}
+                  className="ml-2"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
               </div>
             </div>
           </header>
