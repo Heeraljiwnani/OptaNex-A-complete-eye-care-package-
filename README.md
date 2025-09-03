@@ -178,8 +178,3 @@ This project is licensed under the **MIT License**.
 * [NIH: Age-related Macular Degeneration](https://www.nei.nih.gov/learn-about-eye-health/eye-conditions-and-diseases/age-related-macular-degeneration)
 
 ---
-
-```
-
-installation steps, so users can tick them off as they go?
-```
