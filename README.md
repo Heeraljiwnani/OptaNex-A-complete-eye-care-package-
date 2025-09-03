@@ -50,49 +50,46 @@ Existing tools are fragmented, lack AI support, and don’t provide personalized
 
 ## ⚙️ Installation & Setup
 
-### 🔹 Clone & Run Locally
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/optanex.git
-   cd optanex
-````
-
-2. **Install dependencies:**
-
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server:**
-
-   ```bash
-   npm run dev
-   ```
-
-4. **Backend Setup:**
-
-   * Configure **Supabase** project and credentials
-   * Run **FastAPI** backend for AI predictions
-
 ---
 
-### 🔹 Installing as a PWA
+### 🔹 Clone & Run Locally
 
-OptaNex can be installed on **desktop** and **mobile** like a native app.
+#### 1. Clone the repository
+```bash
+git clone https://github.com/your-username/optanex.git
+cd optanex
+2. Install dependencies
+bash
+Copy code
+npm install
+3. Start the development server
+bash
+Copy code
+npm run dev
+4. Backend Setup
+Configure Supabase project and credentials
 
-#### 📱 On Mobile (Android / iOS)
+Run FastAPI backend for AI predictions
 
-1. Open OptaNex in **Chrome** (Android) or **Safari** (iOS)
-2. Tap the **menu/share button**
-3. Select **"Add to Home Screen"**
-4. The app will now appear on your home screen and launch like a native app
+🔹 Installing as a PWA
+OptaNex can be installed on desktop and mobile like a native app.
 
-#### 💻 On Desktop (Windows / macOS / Linux)
+📱 On Mobile (Android / iOS)
+Step 1: Open OptaNex in Chrome (Android) or Safari (iOS)
 
-1. Open OptaNex in **Chrome / Edge** browser
-2. Click the **Install App** (➕ icon in the address bar)
-3. Confirm installation
-4. OptaNex will now be available in your apps menu and run in a standalone window
+Step 2: Tap the menu/share button
 
-```
+Step 3: Select "Add to Home Screen"
+
+Step 4: The app will now appear on your home screen and launch like a native app
+
+💻 On Desktop (Windows / macOS / Linux)
+Step 1: Open OptaNex in Chrome / Edge browser
+
+Step 2: Click the Install App (➕ icon in the address bar)
+
+Step 3: Confirm installation
+
+Step 4: OptaNex will now be available in your apps menu and run in a standalone window
+
 
