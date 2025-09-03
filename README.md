@@ -69,8 +69,10 @@ Existing tools are fragmented, lack AI support, and don’t provide personalized
    ```
 4. Backend Setup:
 
+    ```bash
    * Configure **Supabase** project and credentials
    * Run **FastAPI** backend for AI predictions
+       ```
 
 
 ###  Installing as a PWA
