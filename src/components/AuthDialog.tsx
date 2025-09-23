@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '/src/components/ui/dialog.tsx';
 import { Button } from '/src/components/ui/button.tsx';
 import { Input } from '/src/components/ui/input.tsx';
-import { Label } from '/src/components/ui/label.tsx;
+import { Label } from '/src/components/ui/label.tsx';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '/src/components/ui/tabs.tsx';
 import { useAuth } from '/src/hooks/useAuth.tsx';
-import { useToast } from '/src/hooks/use-toast.ts";
+import { useToast } from '/src/hooks/use-toast.ts';
 import { Eye, EyeOff } from 'lucide-react';
 
 interface AuthDialogProps {

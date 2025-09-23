@@ -12,7 +12,7 @@ import PrescriptTracker from "/src/pages/PrescriptTracker.tsx";
 import EyeChronicle from "/src/pages/EyeChronicle.tsx";
 import GlareGuard from "/src/pages/GlareGuard.tsx";
 import Auth from "/src/pages/Auth.tsx";
-import NotFound from "/src/pages/NotFound.tsx";
+
 
 import { PWAInstallPrompt } from "/src/components/PWAInstallPrompt.tsx";
 

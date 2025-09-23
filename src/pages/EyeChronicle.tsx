@@ -1,14 +1,24 @@
-import { Card, CardContent, CardHeader, CardTitle } from "/src/components/ui/card.tsx";
+import { useState, useEffect } from "react";
+import { format } from "date-fns";
+
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle 
+} from "/src/components/ui/card.tsx";
+
 import { Button } from "/src/components/ui/button.tsx";
 import { Badge } from "/src/components/ui/badge.tsx";
-import { History, Calendar, User, FileText, Plus, Eye } from "lucide-react";
-import { format } from "date-fns";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "/src/components/ui/input.tsx";
 import { Label } from "/src/components/ui/label.tsx";
 import { Textarea } from "/src/components/ui/textarea.tsx";
-import { Calendar } from "/src/components/ui/calendar.tsxr";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "/src/components/ui/dialog.tsx";
 import { Popover, PopoverContent, PopoverTrigger } from "/src/components/ui/popover.tsx";
+import { Calendar } from "/src/components/ui/calendar.tsx"; // your UI Calendar component
+
+import { History, Calendar as CalendarIcon, User, FileText, Plus, Eye } from "lucide-react"; // renamed lucide Calendar
+
 import { cn } from "/src/lib/utils.ts";
 import { supabase } from "/src/integrations/supabase/client.ts";
 import { useToast } from "/src/hooks/use-toast.ts";

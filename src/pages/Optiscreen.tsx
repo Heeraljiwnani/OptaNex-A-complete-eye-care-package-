@@ -4,6 +4,7 @@ import { Button } from "/src/components/ui/button.tsx";
 import { Badge } from "/src/components/ui/badge.tsx";
 import { ImageUploadDialog } from "/src/components/ImageUploadDialog.tsx";
 import { SnellenTestDialog } from "/src/components/SnellenTestDialog.tsx";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "/src/components/ui/dialog.tsx";
 import { 
   Eye, 
   Brain, 
@@ -18,18 +19,9 @@ import {
 
 
 
-import { IshiharaTest } from "/src/components/IshiharaTest.tsx";
-import { 
-  Eye, 
-  Brain, 
-  Palette, 
-  Target, 
-  ArrowRight, 
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  Zap
-} from "lucide-react";
+import IshiharaPlate from "/src/components/IshiharaPlate.tsx";
+
+
 
 const screeningTests = [
   {
@@ -101,9 +93,11 @@ const screeningTests = [
 export default function Optiscreen() {
   const [selectedTest, setSelectedTest] = useState<string | null>(null);
   const [showSymptoms, setShowSymptoms] = useState<string | null>(null);
+  const [activeTest, setActiveTest] = useState<string | null>(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [showSnellenDialog, setShowSnellenDialog] = useState(false);
-  const [showIshiharaTest, setShowIshiharaTest] = useState(false);
+  const [showIshiharaPlate, setShowIshiharaPlate] = useState(false);
+  
   const [currentTestType, setCurrentTestType] = useState<string>("");
 
   const handleTestClick = (testId: string) => {
@@ -118,7 +112,7 @@ export default function Optiscreen() {
     } else if (testId === "snellen-test") {
       setShowSnellenDialog(true);
     } else if (testId === "color-blindness") {
-      setShowIshiharaTest(true);
+      setShowIshiharaPlate(true);
     } else {
       console.log(`Starting test: ${testId}`);
     }
@@ -291,19 +285,19 @@ export default function Optiscreen() {
       />
 
       {/* Ishihara Test */}
-      {showIshiharaTest && (
+      {showIshiharaPlate && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="w-full max-w-4xl">
             <div className="flex justify-end mb-4">
               <Button 
                 variant="outline" 
-                onClick={() => setShowIshiharaTest(false)}
+                onClick={() => setShowIshiharaPlate(false)}
                 className="mb-4"
               >
                 Close Test
               </Button>
             </div>
-            <IshiharaTest onTestComplete={(results) => {
+            <IshiharaPlate onTestComplete={(results) => {
               console.log("Ishihara test results:", results);
               // Here you could save results to database
             }} />
