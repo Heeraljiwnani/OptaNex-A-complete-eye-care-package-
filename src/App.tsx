@@ -14,6 +14,11 @@ import GlareGuard from "/src/pages/GlareGuard.tsx";
 import Auth from "/src/pages/Auth.tsx";
 import NotFound from "/src/pages/NotFound.tsx";
 
+import { PWAInstallPrompt } from "/src/components/PWAInstallPrompt.tsx";
+
+import PrivacyPolicy from "/src/pages/PrivacyPolicy.tsx";
+import NotFound from "/src/pages/NotFound.tsx";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -24,7 +29,6 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/auth" element={<Auth />} />
             <Route path="/" element={
               <Layout>
                 <Dashboard />
@@ -55,8 +59,14 @@ const App = () => (
                 <GlareGuard />
               </Layout>
             } />
+            <Route path="/privacy" element={
+              <Layout>
+                <PrivacyPolicy />
+              </Layout>
+            } />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <PWAInstallPrompt />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

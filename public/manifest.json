@@ -1,0 +1,68 @@
+{
+    "name": "OptaNex - Complete Eye Care Companion",
+    "short_name": "OptaNex",
+    "description": "Track your eye health, monitor screen time, and protect your vision with our comprehensive suite of AI-powered tools.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#3b82f6",
+    "orientation": "portrait-primary",
+    "categories": ["health", "medical", "lifestyle"],
+    "icons": [
+      {
+        "src": "/android-chrome-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png",
+        "purpose": "maskable any"
+      },
+      {
+        "src": "/android-chrome-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "maskable any"
+      },
+      {
+        "src": "/apple-touch-icon.png",
+        "sizes": "180x180",
+        "type": "image/png"
+      }
+    ],
+    "shortcuts": [
+      {
+        "name": "Eye Screening",
+        "short_name": "Screening",
+        "description": "AI-powered eye screening tests",
+        "url": "/optiscreen",
+        "icons": [
+          {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192"
+          }
+        ]
+      },
+      {
+        "name": "Track Eye Power",
+        "short_name": "Track",
+        "description": "Monitor your eye power trends",
+        "url": "/optitrack",
+        "icons": [
+          {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192"
+          }
+        ]
+      },
+      {
+        "name": "Blue Light Protection",
+        "short_name": "GlareGuard",
+        "description": "Blue light exposure tracking",
+        "url": "/galrguard",
+        "icons": [
+          {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192"
+          }
+        ]
+      }
+    ]
+  }

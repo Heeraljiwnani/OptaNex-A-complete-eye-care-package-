@@ -1,7 +1,10 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "/src/components/ui/card.tsx";
 import { Button } from "/src/components/ui/button.tsx";
 import { Eye, Scan, BarChart3, FileImage, History, Shield, ArrowRight, Activity, Users, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "/src/integrations/supabase/client.ts";
+import { useAuth } from "/src/hooks/useAuth.tsx";
 
 const features = [
   {
@@ -46,13 +49,104 @@ const features = [
   }
 ];
 
-const quickStats = [
-  { label: "Last Checkup", value: "2 weeks ago", icon: Activity },
-  { label: "Eye Power", value: "-2.5 D", icon: Eye },
-  { label: "Health Score", value: "92%", icon: TrendingUp }
-];
-
 export default function Dashboard() {
+  const { user } = useAuth();
+  const [stats, setStats] = useState({
+    lastCheckup: "No data",
+    eyePower: "No data", 
+    healthScore: "No data"
+  });
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardStats();
+      setupRealtimeSubscription();
+    }
+  }, [user]);
+
+  const fetchDashboardStats = async () => {
+    try {
+      // Fetch latest eye power record
+      const { data: eyePowerData } = await supabase
+        .from('eye_power_records')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('checkup_date', { ascending: false })
+        .limit(1);
+
+      // Fetch latest medical history for last checkup
+      const { data: medicalData } = await supabase
+        .from('medical_history')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('diagnosis_date', { ascending: false })
+        .limit(1);
+
+      // Calculate days since last checkup
+      const getLastCheckupText = () => {
+        if (!medicalData?.[0]?.diagnosis_date) return "No checkups yet";
+        
+        const checkupDate = new Date(medicalData[0].diagnosis_date);
+        const today = new Date();
+        const diffTime = Math.abs(today.getTime() - checkupDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) return "Today";
+        if (diffDays === 1) return "Yesterday";
+        if (diffDays <= 7) return `${diffDays} days ago`;
+        if (diffDays <= 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+        if (diffDays <= 365) return `${Math.floor(diffDays / 30)} months ago`;
+        return `${Math.floor(diffDays / 365)} years ago`;
+      };
+
+      // Fetch screening results for health score
+      const { data: screeningData } = await supabase
+        .from('screening_results')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('test_date', { ascending: false })
+        .limit(1);
+
+      setStats({
+        lastCheckup: getLastCheckupText(),
+        eyePower: eyePowerData?.[0] ? 
+          `${eyePowerData[0].left_eye_power || 0} / ${eyePowerData[0].right_eye_power || 0} D` : "No data",
+        healthScore: screeningData?.[0]?.risk_level === 'low' ? "95%" : 
+                    screeningData?.[0]?.risk_level === 'medium' ? "75%" : 
+                    screeningData?.[0]?.risk_level === 'high' ? "45%" : "No data"
+      });
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+    }
+  };
+
+  const setupRealtimeSubscription = () => {
+    const channel = supabase
+      .channel('dashboard-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'eye_power_records', filter: `user_id=eq.${user?.id}` },
+        () => fetchDashboardStats()
+      )
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'medical_history', filter: `user_id=eq.${user?.id}` },
+        () => fetchDashboardStats()
+      )
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'screening_results', filter: `user_id=eq.${user?.id}` },
+        () => fetchDashboardStats()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
+
+  const quickStats = [
+    { label: "Last Checkup", value: stats.lastCheckup, icon: Activity },
+    { label: "Eye Power", value: stats.eyePower, icon: Eye },
+    { label: "Health Score", value: stats.healthScore, icon: TrendingUp }
+  ];
   return (
     <div className="p-6 space-y-8">
       {/* Hero Section */}

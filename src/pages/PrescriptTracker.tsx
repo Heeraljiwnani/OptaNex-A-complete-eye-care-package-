@@ -19,41 +19,20 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 
-// Mock data for demonstration
-const mockPrescriptions = [
-  {
-    id: 1,
-    doctorName: "Dr. Sarah Johnson",
-    clinic: "Vision Care Center",
-    date: "2024-12-10",
-    type: "Glasses Prescription",
-    fileName: "prescription_dec_2024.jpg",
-    notes: "Regular checkup, slight increase in power"
-  },
-  {
-    id: 2,
-    doctorName: "Dr. Michael Chen",
-    clinic: "Eye Health Institute",
-    date: "2024-06-15",
-    type: "Contact Lens Prescription",
-    fileName: "contact_prescription_jun_2024.pdf",
-    notes: "Switched to daily disposables"
-  },
-  {
-    id: 3,
-    doctorName: "Dr. Emily Rodriguez",
-    clinic: "Retina Specialists",
-    date: "2024-03-20",
-    type: "Specialist Report",
-    fileName: "retina_scan_mar_2024.jpg",
-    notes: "Diabetic retinopathy screening - normal"
-  }
-];
+
+
+import { supabase } from "/src/integrations/supabase/client.ts";
+import { useAuth } from "/src/hooks/useAuth.tsx";
+import { useToast } from "/src/hooks/use-toast.ts";
 
 export default function PrescriptTracker() {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [prescriptions, setPrescriptions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     doctorName: "",
     clinic: "",
@@ -62,6 +41,52 @@ export default function PrescriptTracker() {
     notes: ""
   });
 
+  // Fetch prescriptions from database
+  useEffect(() => {
+    if (user) {
+      fetchPrescriptions();
+      setupRealtimeSubscription();
+    }
+  }, [user]);
+
+  const fetchPrescriptions = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('prescriptions')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setPrescriptions(data || []);
+    } catch (error) {
+      console.error('Error fetching prescriptions:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load prescriptions",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const setupRealtimeSubscription = () => {
+    const channel = supabase
+      .channel('prescriptions-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'prescriptions', filter: `user_id=eq.${user?.id}` },
+        () => {
+          fetchPrescriptions();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  };
+
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -69,10 +94,40 @@ export default function PrescriptTracker() {
     }
   };
 
-  const handleUpload = () => {
-    if (selectedFile && formData.doctorName && formData.date) {
-      // Here you would upload the file and save the prescription data
-      console.log("Uploading prescription:", { file: selectedFile, ...formData });
+  const handleUpload = async () => {
+    if (!selectedFile || !formData.doctorName || !formData.date) return;
+
+    try {
+      // Upload file to Supabase storage
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `${user?.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('prescriptions')
+        .upload(filePath, selectedFile);
+
+      if (uploadError) throw uploadError;
+
+      // Save prescription data to database
+      const { error: dbError } = await supabase
+        .from('prescriptions')
+        .insert({
+          user_id: user?.id,
+          doctor_name: formData.doctorName,
+          clinic_name: formData.clinic,
+          prescription_date: formData.date,
+          image_url: filePath,
+          notes: formData.notes
+        });
+
+      if (dbError) throw dbError;
+
+      toast({
+        title: "Success",
+        description: "Prescription uploaded successfully"
+      });
+
       setShowUploadForm(false);
       setSelectedFile(null);
       setFormData({
@@ -82,14 +137,20 @@ export default function PrescriptTracker() {
         type: "Glasses Prescription",
         notes: ""
       });
+    } catch (error) {
+      console.error('Error uploading prescription:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload prescription",
+        variant: "destructive"
+      });
     }
   };
 
-  const filteredPrescriptions = mockPrescriptions.filter(
+  const filteredPrescriptions = prescriptions.filter(
     prescription =>
-      prescription.doctorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      prescription.clinic.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      prescription.type.toLowerCase().includes(searchTerm.toLowerCase())
+      prescription.doctor_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      prescription.clinic_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getTypeColor = (type: string) => {
@@ -126,7 +187,7 @@ export default function PrescriptTracker() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Prescriptions</p>
-                <p className="text-3xl font-bold text-foreground">{mockPrescriptions.length}</p>
+                <p className="text-3xl font-bold text-foreground">{prescriptions.length}</p>
               </div>
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                 <FileImage className="h-6 w-6 text-primary" />
@@ -141,7 +202,7 @@ export default function PrescriptTracker() {
               <div>
                 <p className="text-sm text-muted-foreground">Latest Upload</p>
                 <p className="text-lg font-bold text-foreground">
-                  {format(new Date(mockPrescriptions[0].date), "MMM dd")}
+                  {prescriptions.length > 0 ? format(new Date(prescriptions[0].prescription_date), "MMM dd") : "No data"}
                 </p>
               </div>
               <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
@@ -333,9 +394,11 @@ export default function PrescriptTracker() {
                           <FileImage className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-foreground">{prescription.fileName}</h3>
-                          <Badge className={getTypeColor(prescription.type)}>
-                            {prescription.type}
+                          <h3 className="font-semibold text-foreground">
+                            {prescription.image_url ? prescription.image_url.split('/').pop() : 'Prescription'}
+                          </h3>
+                          <Badge className="bg-primary/10 text-primary">
+                            Prescription
                           </Badge>
                         </div>
                       </div>
@@ -344,20 +407,20 @@ export default function PrescriptTracker() {
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-muted-foreground" />
                           <span className="text-muted-foreground">Dr:</span>
-                          <span className="font-medium">{prescription.doctorName}</span>
+                          <span className="font-medium">{prescription.doctor_name}</span>
                         </div>
                         
                         <div className="flex items-center gap-2">
                           <MapPin className="h-4 w-4 text-muted-foreground" />
                           <span className="text-muted-foreground">Clinic:</span>
-                          <span className="font-medium">{prescription.clinic}</span>
+                          <span className="font-medium">{prescription.clinic_name || 'N/A'}</span>
                         </div>
                         
                         <div className="flex items-center gap-2">
                           <Clock className="h-4 w-4 text-muted-foreground" />
                           <span className="text-muted-foreground">Date:</span>
                           <span className="font-medium">
-                            {format(new Date(prescription.date), "MMM dd, yyyy")}
+                            {format(new Date(prescription.prescription_date), "MMM dd, yyyy")}
                           </span>
                         </div>
                       </div>

@@ -16,6 +16,21 @@ import {
   Zap
 } from "lucide-react";
 
+
+
+import { IshiharaTest } from "/src/components/IshiharaTest.tsx";
+import { 
+  Eye, 
+  Brain, 
+  Palette, 
+  Target, 
+  ArrowRight, 
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Zap
+} from "lucide-react";
+
 const screeningTests = [
   {
     id: "diabetic-retinopathy",
@@ -88,6 +103,7 @@ export default function Optiscreen() {
   const [showSymptoms, setShowSymptoms] = useState<string | null>(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [showSnellenDialog, setShowSnellenDialog] = useState(false);
+  const [showIshiharaTest, setShowIshiharaTest] = useState(false);
   const [currentTestType, setCurrentTestType] = useState<string>("");
 
   const handleTestClick = (testId: string) => {
@@ -101,8 +117,9 @@ export default function Optiscreen() {
       setShowUploadDialog(true);
     } else if (testId === "snellen-test") {
       setShowSnellenDialog(true);
+    } else if (testId === "color-blindness") {
+      setShowIshiharaTest(true);
     } else {
-      // For other tests, handle differently (not implemented yet)
       console.log(`Starting test: ${testId}`);
     }
   };
@@ -272,6 +289,27 @@ export default function Optiscreen() {
         isOpen={showSnellenDialog}
         onClose={() => setShowSnellenDialog(false)}
       />
+
+      {/* Ishihara Test */}
+      {showIshiharaTest && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-4xl">
+            <div className="flex justify-end mb-4">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowIshiharaTest(false)}
+                className="mb-4"
+              >
+                Close Test
+              </Button>
+            </div>
+            <IshiharaTest onTestComplete={(results) => {
+              console.log("Ishihara test results:", results);
+              // Here you could save results to database
+            }} />
+          </div>
+        </div>
+      )}
 
       {/* Information Banner */}
       <Card className="bg-warning/5 border-warning/20">

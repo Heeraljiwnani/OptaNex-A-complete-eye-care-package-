@@ -4,6 +4,10 @@ import { AppSidebar } from "/src/components/AppSidebar.tsx";
 import { Button } from "/src/components/ui/button.tsx";
 import { useAuth } from "/src/hooks/useAuth.tsx";
 import { Menu, LogOut, User } from "lucide-react";
+import { useState } from "react";
+
+import { SplashScreen } from "/src/components/SplashScreen.tsx";
+import { AuthDialog } from "/src/components/AuthDialog.tsx";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,17 +15,50 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const { user, loading, signOut } = useAuth();
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <SplashScreen />;
   }
 
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return (
+      <>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10">
+          <div className="text-center space-y-8 max-w-md mx-auto p-8">
+            <div className="space-y-4">
+              <div className="w-20 h-20 mx-auto bg-gradient-primary rounded-2xl flex items-center justify-center shadow-custom-lg">
+                <div className="w-10 h-10 text-primary-foreground font-bold text-2xl flex items-center justify-center">O</div>
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold text-foreground mb-2">OptaNex</h1>
+                <p className="text-lg text-muted-foreground">Complete Eye Care Companion</p>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <p className="text-muted-foreground">
+                Track your eye health, monitor screen time, and protect your vision with our comprehensive suite of tools.
+              </p>
+              
+              <Button 
+                onClick={() => setAuthDialogOpen(true)}
+                className="w-full gap-2"
+                size="lg"
+              >
+                <User className="h-5 w-5" />
+                Get Started
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        <AuthDialog 
+          open={authDialogOpen} 
+          onOpenChange={setAuthDialogOpen} 
+        />
+      </>
+    );
   }
   return (
     <SidebarProvider>

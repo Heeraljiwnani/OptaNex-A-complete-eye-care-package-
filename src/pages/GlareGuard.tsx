@@ -7,9 +7,17 @@ import { useScreenTime } from "/src/hooks/useScreenTime.tsx";
 import { useState } from "react";
 
 export default function GlareGuard() {
-  const { todayTotal, blueLightLevel, protectionScore, formattedTime, isActive } = useScreenTime();
-  const [blueFilterEnabled, setBlueFilterEnabled] = useState(false);
-  const [autoBreakReminder, setAutoBreakReminder] = useState(true);
+  const { 
+    todayTotal, 
+    blueLightLevel, 
+    protectionScore, 
+    formattedTime, 
+    isActive,
+    blueFilterEnabled,
+    breakRemindersEnabled,
+    toggleBlueFilter,
+    toggleBreakReminders
+  } = useScreenTime();
 
   const getBlueLightColor = (level: string) => {
     switch (level) {
@@ -131,7 +139,7 @@ export default function GlareGuard() {
             </div>
             <Switch 
               checked={blueFilterEnabled} 
-              onCheckedChange={setBlueFilterEnabled}
+              onCheckedChange={toggleBlueFilter}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -140,8 +148,8 @@ export default function GlareGuard() {
               <p className="text-sm text-muted-foreground">Get notified every 20 minutes</p>
             </div>
             <Switch 
-              checked={autoBreakReminder} 
-              onCheckedChange={setAutoBreakReminder}
+              checked={breakRemindersEnabled} 
+              onCheckedChange={toggleBreakReminders}
             />
           </div>
         </CardContent>
@@ -185,22 +193,6 @@ export default function GlareGuard() {
         </CardContent>
       </Card>
 
-      <Card className="bg-warning/5 border-warning/20">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <Shield className="h-5 w-5 text-warning flex-shrink-0 mt-1" />
-            <div>
-              <h3 className="font-semibold text-foreground mb-2">Blue Light Protection Tips</h3>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Take breaks every 20 minutes</li>
-                <li>• Use blue light filtering glasses</li>
-                <li>• Reduce screen brightness in low light</li>
-                <li>• Consider screen filters or apps</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

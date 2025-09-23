@@ -18,17 +18,14 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "/src/lib/utils.ts";
-
-// Mock data for demonstration
-const mockPowerHistory = [
-  { date: "2024-01-15", leftEye: -2.25, rightEye: -2.50, astigmatism: { left: -0.50, right: -0.75 } },
-  { date: "2024-06-20", leftEye: -2.50, rightEye: -2.75, astigmatism: { left: -0.50, right: -0.75 } },
-  { date: "2024-12-10", leftEye: -2.75, rightEye: -3.00, astigmatism: { left: -0.75, right: -1.00 } },
-];
-
+import { supabase } from "/src/integrations/supabase/client.ts";
+import { useToast } from "/src/hooks/use-toast.ts";
+import { useAuth } from "/src/hooks/useAuth.tsx";
 export default function Optitrack() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [showAddForm, setShowAddForm] = useState(false);
+  const [powerHistory, setPowerHistory] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [newEntry, setNewEntry] = useState({
     leftEye: "",
     rightEye: "",
@@ -37,17 +34,77 @@ export default function Optitrack() {
     notes: ""
   });
 
-  const handleAddEntry = () => {
-    // Here you would save the entry to your database
-    console.log("Adding new entry:", { date: selectedDate, ...newEntry });
-    setShowAddForm(false);
-    setNewEntry({
-      leftEye: "",
-      rightEye: "",
-      leftAstigmatism: "",
-      rightAstigmatism: "",
-      notes: ""
-    });
+  const { toast } = useToast();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      fetchPowerHistory();
+    }
+  }, [user]);
+
+  const fetchPowerHistory = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('eye_power_records')
+        .select('*')
+        .order('checkup_date', { ascending: true });
+
+      if (error) throw error;
+      setPowerHistory(data || []);
+    } catch (error) {
+      console.error('Error fetching power history:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load eye power history",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddEntry = async () => {
+    if (!user || !selectedDate) return;
+
+    try {
+      const { error } = await supabase
+        .from('eye_power_records')
+        .insert({
+          user_id: user.id,
+          checkup_date: format(selectedDate, 'yyyy-MM-dd'),
+          left_eye_power: newEntry.leftEye ? parseFloat(newEntry.leftEye) : null,
+          right_eye_power: newEntry.rightEye ? parseFloat(newEntry.rightEye) : null,
+          left_eye_cylinder: newEntry.leftAstigmatism ? parseFloat(newEntry.leftAstigmatism) : null,
+          right_eye_cylinder: newEntry.rightAstigmatism ? parseFloat(newEntry.rightAstigmatism) : null,
+          notes: newEntry.notes || null
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Eye power record added successfully"
+      });
+
+      setShowAddForm(false);
+      setNewEntry({
+        leftEye: "",
+        rightEye: "",
+        leftAstigmatism: "",
+        rightAstigmatism: "",
+        notes: ""
+      });
+      
+      fetchPowerHistory();
+    } catch (error) {
+      console.error('Error adding record:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add eye power record",
+        variant: "destructive"
+      });
+    }
   };
 
   const getTrend = (current: number, previous: number) => {
@@ -59,11 +116,11 @@ export default function Optitrack() {
     return { type: "stable", icon: Minus, color: "text-muted-foreground" };
   };
 
-  const latestEntry = mockPowerHistory[mockPowerHistory.length - 1];
-  const previousEntry = mockPowerHistory[mockPowerHistory.length - 2];
+  const latestEntry = powerHistory[powerHistory.length - 1];
+  const previousEntry = powerHistory[powerHistory.length - 2];
   
-  const leftTrend = previousEntry ? getTrend(latestEntry.leftEye, previousEntry.leftEye) : null;
-  const rightTrend = previousEntry ? getTrend(latestEntry.rightEye, previousEntry.rightEye) : null;
+  const leftTrend = previousEntry && latestEntry ? getTrend(latestEntry.left_eye_power || 0, previousEntry.left_eye_power || 0) : null;
+  const rightTrend = previousEntry && latestEntry ? getTrend(latestEntry.right_eye_power || 0, previousEntry.right_eye_power || 0) : null;
 
   return (
     <div className="p-6 space-y-8">
@@ -91,7 +148,9 @@ export default function Optitrack() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-3xl font-bold text-foreground">{latestEntry.leftEye}</p>
+                <p className="text-3xl font-bold text-foreground">
+                  {latestEntry?.left_eye_power || '--'}
+                </p>
                 <p className="text-sm text-muted-foreground">Diopters</p>
               </div>
               {leftTrend && (
@@ -103,10 +162,10 @@ export default function Optitrack() {
                 </div>
               )}
             </div>
-            {latestEntry.astigmatism.left !== 0 && (
+            {latestEntry?.left_eye_cylinder && (
               <div className="mt-2 pt-2 border-t">
                 <p className="text-sm text-muted-foreground">
-                  Astigmatism: {latestEntry.astigmatism.left}
+                  Astigmatism: {latestEntry.left_eye_cylinder}
                 </p>
               </div>
             )}
@@ -123,7 +182,9 @@ export default function Optitrack() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-3xl font-bold text-foreground">{latestEntry.rightEye}</p>
+                <p className="text-3xl font-bold text-foreground">
+                  {latestEntry?.right_eye_power || '--'}
+                </p>
                 <p className="text-sm text-muted-foreground">Diopters</p>
               </div>
               {rightTrend && (
@@ -135,10 +196,10 @@ export default function Optitrack() {
                 </div>
               )}
             </div>
-            {latestEntry.astigmatism.right !== 0 && (
+            {latestEntry?.right_eye_cylinder && (
               <div className="mt-2 pt-2 border-t">
                 <p className="text-sm text-muted-foreground">
-                  Astigmatism: {latestEntry.astigmatism.right}
+                  Astigmatism: {latestEntry.right_eye_cylinder}
                 </p>
               </div>
             )}
@@ -154,14 +215,14 @@ export default function Optitrack() {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-foreground">
-              {format(new Date(latestEntry.date), "MMM dd")}
+              {latestEntry ? format(new Date(latestEntry.checkup_date), "MMM dd") : '--'}
             </p>
             <p className="text-sm text-muted-foreground">
-              {format(new Date(latestEntry.date), "yyyy")}
+              {latestEntry ? format(new Date(latestEntry.checkup_date), "yyyy") : '--'}
             </p>
             <div className="mt-2 pt-2 border-t">
               <Badge variant="secondary" className="text-xs">
-                {mockPowerHistory.length} total readings
+                {powerHistory.length} total readings
               </Badge>
             </div>
           </CardContent>
@@ -283,32 +344,38 @@ export default function Optitrack() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {mockPowerHistory.map((entry, index) => (
-              <div key={index} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                <div className="flex items-center gap-4">
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground">Date</p>
-                    <p className="font-semibold">{format(new Date(entry.date), "MMM dd, yyyy")}</p>
+            {loading ? (
+              <p className="text-center text-muted-foreground">Loading...</p>
+            ) : powerHistory.length === 0 ? (
+              <p className="text-center text-muted-foreground">No records found. Add your first reading!</p>
+            ) : (
+              powerHistory.map((entry, index) => (
+                <div key={entry.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-4">
+                    <div className="text-center">
+                      <p className="text-sm text-muted-foreground">Date</p>
+                      <p className="font-semibold">{format(new Date(entry.checkup_date), "MMM dd, yyyy")}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-8 text-center">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Left Eye</p>
+                      <p className="text-lg font-bold">{entry.left_eye_power || '--'}D</p>
+                      {entry.left_eye_cylinder && (
+                        <p className="text-xs text-muted-foreground">Astig: {entry.left_eye_cylinder}D</p>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Right Eye</p>
+                      <p className="text-lg font-bold">{entry.right_eye_power || '--'}D</p>
+                      {entry.right_eye_cylinder && (
+                        <p className="text-xs text-muted-foreground">Astig: {entry.right_eye_cylinder}D</p>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-8 text-center">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Left Eye</p>
-                    <p className="text-lg font-bold">{entry.leftEye}D</p>
-                    {entry.astigmatism.left !== 0 && (
-                      <p className="text-xs text-muted-foreground">Astig: {entry.astigmatism.left}D</p>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Right Eye</p>
-                    <p className="text-lg font-bold">{entry.rightEye}D</p>
-                    {entry.astigmatism.right !== 0 && (
-                      <p className="text-xs text-muted-foreground">Astig: {entry.astigmatism.right}D</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </CardContent>
       </Card>
