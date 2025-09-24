@@ -1,5 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "/src/components/ui/card.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Lock, Eye, Database, UserCheck, FileText, AlertTriangle, Mail } from "lucide-react";
+
+
 
 export default function PrivacyPolicy() {
   return (

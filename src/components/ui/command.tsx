@@ -3,8 +3,9 @@ import { type DialogProps } from "@radix-ui/react-dialog"
 import { Command as CommandPrimitive } from "cmdk"
 import { Search } from "lucide-react"
 
-import { cn } from "/src/lib/utils.ts"
-import { Dialog, DialogContent } from "/src/components/ui/dialog.tsx"
+import { cn } from "@/lib/utils"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
+
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -150,4 +151,4 @@ export {
   CommandItem,
   CommandShortcut,
   CommandSeparator,
-}aspect-ratio.tsx
+}

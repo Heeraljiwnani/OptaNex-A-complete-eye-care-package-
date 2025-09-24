@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "/src/components/ui/card.tsx";
-import { Button } from "/src/components/ui/button.tsx";
-import { Input } from "/src/components/ui/input.tsx";
-import { Label } from "/src/components/ui/label.tsx";
-import { Calendar } from "/src/components/ui/calendar.tsx";
-import { Popover, PopoverContent, PopoverTrigger } from "/src/components/ui/popover.tsx";
-import { Badge } from "/src/components/ui/badge.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -17,10 +17,11 @@ import {
   Minus
 } from "lucide-react";
 import { format } from "date-fns";
-import { cn } from "/src/lib/utils.ts";
-import { supabase } from "/src/integrations/supabase/client.ts";
-import { useToast } from "/src/hooks/use-toast.ts";
-import { useAuth } from "/src/hooks/useAuth.tsx";
+import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+
 export default function Optitrack() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [showAddForm, setShowAddForm] = useState(false);

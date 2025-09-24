@@ -6,23 +6,24 @@ import {
   CardContent, 
   CardHeader, 
   CardTitle 
-} from "/src/components/ui/card.tsx";
+} from "@/components/ui/card";
 
-import { Button } from "/src/components/ui/button.tsx";
-import { Badge } from "/src/components/ui/badge.tsx";
-import { Input } from "/src/components/ui/input.tsx";
-import { Label } from "/src/components/ui/label.tsx";
-import { Textarea } from "/src/components/ui/textarea.tsx";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "/src/components/ui/dialog.tsx";
-import { Popover, PopoverContent, PopoverTrigger } from "/src/components/ui/popover.tsx";
-import { Calendar } from "/src/components/ui/calendar.tsx"; // your UI Calendar component
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar"; // your UI Calendar component
 
 import { History, Calendar as CalendarIcon, User, FileText, Plus, Eye } from "lucide-react"; // renamed lucide Calendar
 
-import { cn } from "/src/lib/utils.ts";
-import { supabase } from "/src/integrations/supabase/client.ts";
-import { useToast } from "/src/hooks/use-toast.ts";
-import { useAuth } from "/src/hooks/useAuth.tsx";
+import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+
 export default function EyeChronicle() {
   const [medicalHistory, setMedicalHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

@@ -24,7 +24,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "/src/components/ui/sidebar.tsx";
+} from "./ui/sidebar";
 
 const menuItems = [
   { title: "Dashboard", url: "/", icon: Home },

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "/src/components/ui/card.tsx";
-import { Button } from "/src/components/ui/button.tsx";
-import { Input } from "/src/components/ui/input.tsx";
-import { Label } from "/src/components/ui/label.tsx";
-import { Textarea } from "/src/components/ui/textarea.tsx";
-import { Badge } from "/src/components/ui/badge.tsx";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { 
   Upload, 
   FileImage, 
@@ -19,11 +19,10 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
-
-import { supabase } from "/src/integrations/supabase/client.ts";
-import { useAuth } from "/src/hooks/useAuth.tsx";
-import { useToast } from "/src/hooks/use-toast.ts";
 
 export default function PrescriptTracker() {
   const { user } = useAuth();

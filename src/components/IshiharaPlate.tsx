@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 type IshiharaPlateProps = {
   size?: number;
   totalDots?: number;
-  onTestComplete?: (results: { number: string }) => void;
+  onTestComplete?: (results: { number: string; guess: string; correct: boolean }) => void;
 };
 
 const randomInRange = (min: number, max: number) =>
@@ -33,12 +33,14 @@ const generateDots = (
 const IshiharaPlate: React.FC<IshiharaPlateProps> = ({
   size = 300,
   totalDots = 1200,
-  onTestComplete
+  onTestComplete,
 }) => {
   const [svgContent, setSvgContent] = useState("");
+  const [number, setNumber] = useState("");
+  const [guess, setGuess] = useState("");
 
   useEffect(() => {
-    const number = randomInt(1, 99).toString();
+    const generatedNumber = randomInt(1, 99).toString();
 
     const backgroundDots = generateDots(
       totalDots,
@@ -60,7 +62,7 @@ const IshiharaPlate: React.FC<IshiharaPlateProps> = ({
       <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
         <defs>
           <text id="numberText" x="50%" y="50%" text-anchor="middle" dy=".35em"
-            font-size="${size / 2}" font-family="sans-serif" font-weight="bold">${number}</text>
+            font-size="${size / 2}" font-family="sans-serif" font-weight="bold">${generatedNumber}</text>
           <clipPath id="numberClip">
             <use href="#numberText" />
           </clipPath>
@@ -73,17 +75,34 @@ const IshiharaPlate: React.FC<IshiharaPlateProps> = ({
     `;
 
     setSvgContent(svg);
+    setNumber(generatedNumber);
+  }, [size, totalDots]);
 
+  const handleSubmit = () => {
+    const correct = guess === number;
     if (onTestComplete) {
-      onTestComplete({ number });
+      onTestComplete({ number, guess, correct });
     }
-  }, [size, totalDots, onTestComplete]);
+    alert(correct ? "✅ Correct!" : `❌ Wrong. It was ${number}`);
+  };
 
   return (
-    <div
-      className="flex justify-center items-center"
-      dangerouslySetInnerHTML={{ __html: svgContent }}
-    />
+    <div className="flex flex-col items-center space-y-4">
+      <div dangerouslySetInnerHTML={{ __html: svgContent }} />
+      <input
+        type="text"
+        placeholder="Enter the number you see"
+        value={guess}
+        onChange={(e) => setGuess(e.target.value)}
+        className="border p-2 rounded"
+      />
+      <button
+        onClick={handleSubmit}
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+      >
+        Submit
+      </button>
+    </div>
   );
 };
 

@@ -1,10 +1,21 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "/src/components/ui/card.tsx";
-import { Button } from "/src/components/ui/button.tsx";
-import { Eye, Scan, BarChart3, FileImage, History, Shield, ArrowRight, Activity, Users, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { 
+  Eye, 
+  Scan, 
+  BarChart3, 
+  FileImage, 
+  History, 
+  Shield, 
+  ArrowRight, 
+  Activity, 
+  Users, 
+  TrendingUp 
+} from "lucide-react";
 import { Link } from "react-router-dom";
-import { supabase } from "/src/integrations/supabase/client.ts";
-import { useAuth } from "/src/hooks/useAuth.tsx";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 const features = [
   {

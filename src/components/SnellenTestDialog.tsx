@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "/src/components/ui/dialog.tsx";
-import { Button } from "/src/components/ui/button.tsx";
-import { Card, CardContent } from "/src/components/ui/card.tsx";
-import { Progress } from "/src/components/ui/progress.tsx";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Progress } from "../components/ui/progress";
 import { Target, Eye, CheckCircle, AlertCircle, RotateCcw } from "lucide-react";
-import { useToast } from "/src/hooks/use-toast.ts";
+import { useToast } from "../hooks/use-toast";
+
 
 interface SnellenTestDialogProps {
   isOpen: boolean;

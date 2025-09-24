@@ -1,27 +1,25 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "/src/components/ui/card.tsx";
-import { Button } from "/src/components/ui/button.tsx";
-import { Badge } from "/src/components/ui/badge.tsx";
-import { ImageUploadDialog } from "/src/components/ImageUploadDialog.tsx";
-import { SnellenTestDialog } from "/src/components/SnellenTestDialog.tsx";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "/src/components/ui/dialog.tsx";
-import { 
-  Eye, 
-  Brain, 
-  Palette, 
-  Target, 
-  ArrowRight, 
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {ImageUploadDialog} from "@/components/ImageUploadDialog";
+import { SnellenTestDialog } from "@/components/SnellenTestDialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+
+import {
+  Eye,
+  Brain,
+  Palette,
+  Target,
+  ArrowRight,
   AlertCircle,
   CheckCircle,
   Clock,
-  Zap
+  Zap,
 } from "lucide-react";
 
-
-
-import IshiharaPlate from "/src/components/IshiharaPlate.tsx";
-
-
+import IshiharaPlate from "@/components/IshiharaPlate";
 
 const screeningTests = [
   {

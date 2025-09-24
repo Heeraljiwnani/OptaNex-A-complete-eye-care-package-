@@ -1,10 +1,21 @@
-import { Card, CardContent, CardHeader, CardTitle } from "/src/components/ui/card.tsx";
-import { Badge } from "/src/components/ui/badge.tsx";
-import { Progress } from "/src/components/ui/progress.tsx";
-import { Switch } from "/src/components/ui/switch.tsx";
-import { Shield, Monitor, Clock, Eye, TrendingUp, Activity, Settings, AlertTriangle } from "lucide-react";
-import { useScreenTime } from "/src/hooks/useScreenTime.tsx";
 import { useState } from "react";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Switch } from "@/components/ui/switch";
+import { 
+  Shield, 
+  Monitor, 
+  Clock, 
+  Eye, 
+  TrendingUp, 
+  Activity, 
+  Settings, 
+  AlertTriangle 
+} from "lucide-react";
+
+import { useScreenTime } from "@/hooks/useScreenTime";
 
 export default function GlareGuard() {
   const { 
