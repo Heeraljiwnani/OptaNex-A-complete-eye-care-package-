@@ -54,7 +54,7 @@ const features = [
     title: "GlareGuard",
     description: "Blue light exposure tracking",
     icon: Shield,
-    href: "/galrguard",
+    href: "/glareguard",
     color: "bg-accent",
     stats: "Real-time Monitor"
   }
